@@ -12,11 +12,9 @@ jobs:
 
       - name: Compilation et tests
         run: |
-          mkdir -p build
-          cd build
-          cmake $GITHUB_WORKSPACE
-          make
-          make test
+          cmake -S . -B build
+          cmake --build build
+          ctest --output-on-failure
 
   Test_Add:
     runs-on: ubuntu-latest
@@ -24,11 +22,7 @@ jobs:
     steps:
       - name: Test fonction add
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make
-          ./calculator add 2 3
+          ./build/calculator add 2 3
 
   Test_Sub:
     runs-on: ubuntu-latest
@@ -36,11 +30,7 @@ jobs:
     steps:
       - name: Test fonction sub
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make
-          ./calculator sub 3 -2
+          ./build/calculator sub 3 -2
 
   Test_Mul:
     runs-on: ubuntu-latest
@@ -48,11 +38,7 @@ jobs:
     steps:
       - name: Test fonction mul
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make
-          ./calculator mul 5 5
+          ./build/calculator mul 5 5
 
   Test_Div:
     runs-on: ubuntu-latest
@@ -60,11 +46,7 @@ jobs:
     steps:
       - name: Test fonction div
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make
-          ./calculator div 1 5
+          ./build/calculator div 1 5
 
   Test_Car:
     runs-on: ubuntu-latest
@@ -72,11 +54,7 @@ jobs:
     steps:
       - name: Test fonction car
         run: |
-          mkdir -p build
-          cd build
-          cmake ..
-          make
-          ./calculator car 5
+          ./build/calculator car 5
 
   Deploy:
     runs-on: ubuntu-latest
