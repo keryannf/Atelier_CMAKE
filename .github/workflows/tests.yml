@@ -14,9 +14,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake ..
-          cmake ..
-          cmake ..
+          cmake $GITHUB_WORKSPACE
           make
           make test
 
