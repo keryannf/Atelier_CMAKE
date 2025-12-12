@@ -1,46 +1,86 @@
 name: Automatisation des tests
-on: push
+
+on:
+  push:
+
 jobs:
+  # -----------------------
+  # Compilation du projet
+  # -----------------------
   Compilation:
     runs-on: ubuntu-latest
+    outputs:
+      calculator_path: ${{ steps.set_path.outputs.calculator_path }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Compilation
         run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
-          mkdir build
+          mkdir -p build
           cd build
-          cmake ..
+          cmake $GITHUB_WORKSPACE
           make
-          make test
+      - name: Set calculator path
+        id: set_path
+        run: echo "calculator_path=$GITHUB_WORKSPACE/build/calculator" >> $GITHUB_OUTPUT
 
+  # -----------------------
+  # Test fonction add
+  # -----------------------
   Test_Add:
     runs-on: ubuntu-latest
     needs: Compilation
     steps:
       - name: Test fonction add
-        run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
-          mkdir build
-          cd build
-          cmake ..
-          make
-          ./src/calculator add 10 5
+        run: ${{ needs.Compilation.outputs.calculator_path }} add 2 3
 
+  # -----------------------
+  # Test fonction sub
+  # -----------------------
+  Test_Sub:
+    runs-on: ubuntu-latest
+    needs: Compilation
+    steps:
+      - name: Test fonction sub
+        run: ${{ needs.Compilation.outputs.calculator_path }} sub 3 -2
+
+  # -----------------------
+  # Test fonction mul
+  # -----------------------
+  Test_Mul:
+    runs-on: ubuntu-latest
+    needs: Compilation
+    steps:
+      - name: Test fonction mul
+        run: ${{ needs.Compilation.outputs.calculator_path }} mul 5 5
+
+  # -----------------------
+  # Test fonction div
+  # -----------------------
+  Test_Div:
+    runs-on: ubuntu-latest
+    needs: Compilation
+    steps:
+      - name: Test fonction div
+        run: ${{ needs.Compilation.outputs.calculator_path }} div 1 5
+
+  # -----------------------
+  # Test fonction car
+  # -----------------------
   Test_Car:
     runs-on: ubuntu-latest
     needs: Compilation
     steps:
       - name: Test fonction car
-        run: |
-          last_directory=$(basename ${{ runner.workspace }})
-          git clone https://github.com/${{ github.repository }}.git
-          cd ./$last_directory
-          mkdir build
-          cd build
-          cmake ..
-          make
-          ./src/calculator car 5 0
+        run: ${{ needs.Compilation.outputs.calculator_path }} car 5
+
+  # -----------------------
+  # Déploiement
+  # -----------------------
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: [Test_Add, Test_Sub, Test_Mul, Test_Div, Test_Car]
+    steps:
+      - name: Déploiement
+        run: echo "Déploiement de la solution"
